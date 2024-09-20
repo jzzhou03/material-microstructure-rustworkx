@@ -60,7 +60,7 @@ class TreeEdgesRecorderBfs(BFSVisitor):
 graph = rx.PyGraph()
 filteredGraph = rx.PyGraph()
 
-def createGraph(filename):
+def createGraph(filename, cathode):
     with open(filename, "r") as f:
         lines = f.readlines()
         header = lines[0].split()
@@ -115,8 +115,8 @@ def createGraph(filename):
                 prevRow, currRow = currRow, [None] * dimX
 
             prevLayer, currLayer = currLayer, [[None] * dimX for i in range(dimY)]
-
-        #add_cathode_node(dimX, dimY, dimZ)
+        if (cathode):
+            add_cathode_node(dimX, dimY, dimZ)
 
 def add_cathode_node(dimX,dimY,dimZ):
     cathode = graph.add_node(Node("Interface", 2, 0, 0, 0))
@@ -157,18 +157,18 @@ def visualizeGraphGV(g, file):
     graph_dict = {}
     graphviz_draw(g, filename=file, node_attr_fn=node_attr_fn, graph_attr=graph_dict, method ="neato")
 
-def testGraphRunTime(filename, visualize, times):
+def testGraphRunTime(filename, visualize, cathode, times):
     totalTime = 0;
     if visualize:
         for i in range(times):
             start = time.time()
-            createGraph(filename)
+            createGraph(filename, cathode)
             visualizeGraphGV(graph, "images/rustworkx_graph.jpg")
             totalTime += time.time() - start
     else:
         for i in range(times):
             start = time.time()
-            createGraph(filename)
+            createGraph(filename, cathode)
             totalTime += time.time() - start
     print(totalTime/times)
     return (totalTime / times)
@@ -199,12 +199,12 @@ def filterGraph(g, visualize):
 
     return edges
 
-def testFilterGraph(filename, visualize, times):
+def testFilterGraph(filename, visualize, cathode, times):
     totalTime = 0
     for i in range(times):
         start = time.time()
-        createGraph(filename)
-        filterGraph(visualize)
+        createGraph(filename, cathode)
+        filterGraph(graph, visualize)
         totalTime += time.time() - start
     print(totalTime / times)
     return (totalTime / times)
@@ -231,6 +231,8 @@ def shortest_path(g):
     all_paths = dijkstra_shortest_paths(g, cathode)
     return [all_paths[node] for node in all_paths.keys() if g.get_node_data(node).color == 1]
 
+# Used for creating CSV files for data of testing
+"""
 import tracemalloc
 import csv
 
@@ -258,9 +260,6 @@ def functionMemory(function, *argv):
 
     return stats
 
-
-# Used for creating CSV files for data of testing
-"""
 def csvMaker(fileName, n, dim, count, graphGen, graphGenPar, graphFilt, graphFiltPar, shortPath, shortPathPar):
     row = [n, (n ** dim)]
     totalTime = 0
@@ -292,35 +291,35 @@ def csvMaker(fileName, n, dim, count, graphGen, graphGenPar, graphFilt, graphFil
 
 
 fileName = "tests/10x10.txt"
-createGraph(fileName)
+createGraph(fileName, False)
 filterGraph(graph, False)
 
 csvMaker("RustworkX_Test_Results.csv", 10, 2, 3, createGraph, [fileName], filterGraph, [graph, False],
          shortest_path, [filteredGraph])
 
 fileName = "tests/50x50.txt"
-createGraph(fileName)
+createGraph(fileName, False)
 filterGraph(graph, True)
 
 csvMaker("RustworkX_Test_Results.csv", 50, 2, 3, createGraph, [fileName], filterGraph, [graph, False],
          shortest_path, [filteredGraph])
 
 fileName = "tests/100x100.txt"
-createGraph(fileName)
+createGraph(fileName, False)
 filterGraph(graph, False)
 
 csvMaker("RustworkX_Test_Results.csv", 100, 2, 3, createGraph, [fileName], filterGraph, [graph, False],
          shortest_path, [filteredGraph])
 
 fileName = "tests/500x500.txt"
-createGraph(fileName)
+createGraph(fileName, False)
 filterGraph(graph, False)
 
 csvMaker("RustworkX_Test_Results.csv", 500, 2, 3, createGraph, [fileName], filterGraph, [graph, False],
          shortest_path, [filteredGraph])
 
 fileName = "tests/1000x1000.txt"
-createGraph(fileName)
+createGraph(fileName, False)
 filterGraph(graph, False)
 
 csvMaker("RustworkX_Test_Results.csv", 1000, 2, 3, createGraph, [fileName], filterGraph, [graph, False],
