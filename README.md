@@ -72,9 +72,9 @@ Functions
     &emsp; &emsp; - Required for built in graph filtering  
 
   &emsp; def filterGraph(g, visualize):  
-    &emsp; &emsp; - Takes in a graph and a boolean that states if filtered graph should be visualized	 
-    &emsp; &emsp; - Uses connected components to get desired filtered edge list.which we use to make a tuple of nodes.  
-    &emsp; &emsp; - Uses this list of node tuples to create filtered graph with rustworkx built in function edge_subgraph().  
+    &emsp; &emsp; - Takes in a graph and a boolean that states if filtered graph should be visualized  
+    &emsp; &emsp; - Uses connected components to get desired filtered edge list.which we use to make a tuple of nodes  
+    &emsp; &emsp; - Uses this list of node tuples to create filtered graph with rustworkx built in function edge_subgraph()  
   
  &emsp;  def testFilterGraph(g, filename, visualize, times):  
     &emsp; &emsp; - Takes in a graph, string filename, a boolean variable visualize that states if the user wants a visual of the graph after filtering, and an int variable times of how many times the user wishes the program to run  
