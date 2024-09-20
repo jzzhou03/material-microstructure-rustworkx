@@ -1,7 +1,7 @@
 This is testing of graph capabilites of RustworkX for Material Microstructures.
 
 To be able to create and visualize graphs, you'll need to run these following commands in your terminal:  
-  
+  -----
 &emsp; INSTALLING RUSTWORKX (x86_64, i686, ppc64le, s390x, aarch64 Linux systems, and x86_64, arm64 macOS, and 32, 64 bit Windows):  
   &emsp; &emsp; `pip install rustworkx`  
   
@@ -14,14 +14,16 @@ To be able to create and visualize graphs, you'll need to run these following co
   &emsp; &emsp; &emsp; `pip install matplotlib`
   
 CODE STRUCTURE:  
-  
+  -----
 Global Variables:  
+-----
   &emsp; graph  
     &emsp; &emsp; - using the PyGraph class provided by rustworkx, nodes will be added to this variable in order to visualize a graph.  
   &emsp; filteredGraph  
     &emsp; &emsp; - created to store the filtered original "graph" and be able to call it later on when looking for shortest paths.  
 
 Classes:  
+-----
   &emsp; Node  
     &emsp; &emsp; Custom class that stores node data:  
       &emsp; &emsp; &emsp; - Label (node number/indice)  
@@ -36,6 +38,7 @@ Classes:
       &emsp; &emsp; &emsp; - Weight  
 
 Functions  
+-----
   &emsp; createGraph(filename):  
     &emsp; &emsp; - Takes in a string file name as a parameter which is used to read a file and graphs the nodes depending on the format of the file.  
     &emsp; &emsp; - Currently only allows for structured data  
