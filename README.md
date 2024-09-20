@@ -42,8 +42,9 @@ Classes:
 
 Functions  
 -----
-  &emsp; **createGraph(filename):**  
-    &emsp; &emsp; - Takes in a string file name as a parameter which is used to read a file and graphs the nodes depending on the format of the file.  
+  &emsp; **createGraph(filename, cathode):**  
+    &emsp; &emsp; - Takes in a string file name as a parameter which is used to read a file and graphs the nodes depending on the format of the file. 
+    &emsp; &emsp; - Takes in a boolean to create a cathode node that connects to all bottom black nodes  
     &emsp; &emsp; - Currently only allows for structured data  
     &emsp; &emsp; - Adds a node and edges between it and all its possible neighbors.  
 
