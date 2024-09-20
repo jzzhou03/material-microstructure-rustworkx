@@ -60,7 +60,8 @@ Functions
     &emsp; &emsp; - Recommended by rustworkx documentation for graphs with a lot of nodes.  
 
   &emsp; testGraphRuntime(filename, visualize, times):  
-    &emsp; &emsp; - Takes in a string filename, a boolean variable visualize that states if user wants a visual of graph, and an int variable of how many times it wishes the program to run.  
+    &emsp; &emsp; - Takes in a string filename, a boolean variable visualize that states if user wants a visual of graph, and an int  
+    &emsp; &emsp; &ensp; variable of how many times it wishes the program to run.  
     &emsp; &emsp; - It also returns an average of how long it took for the program to run each time.  
 
   &emsp; filterGraph(visualize):  
@@ -77,7 +78,8 @@ Functions
     &emsp; &emsp; - Uses this list of node tuples to create filtered graph with rustworkx built in function edge_subgraph()  
   
  &emsp;  def testFilterGraph(g, filename, visualize, times):  
-    &emsp; &emsp; - Takes in a graph, string filename, a boolean variable visualize that states if the user wants a visual of the graph after filtering, and an int variable times of how many times the user wishes the program to run  
+    &emsp; &emsp; - Takes in a graph, string filename, a boolean variable visualize that states if the user wants a visual of the graph after filtering, and an int 
+    &emsp; &emsp; &ensp; variable times of how many times the user wishes the program to run  
     &emsp; &emsp; - It also returns an average of how long it took for the program to run each time  
 
   &emsp; def dfs_search(g, source):  
