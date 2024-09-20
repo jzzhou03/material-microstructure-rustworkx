@@ -23,8 +23,6 @@ file1000 = "tests/1000x1000.txt"
 file3D10 = "tests/10x10x10.txt"
 file3D50 = "tests/50x50x50.txt"
 file3D100 = "tests/100x100x100.txt"
-# file3D500 = "tests/500x500x500.txt"
-# file3D1000 = "tests/1000x1000x1000.txt"
 
 class Node:
    def __init__(self, label, color, x, y, z):
@@ -118,7 +116,7 @@ def createGraph(filename):
 
             prevLayer, currLayer = currLayer, [[None] * dimX for i in range(dimY)]
 
-        add_cathode_node(dimX, dimY, dimZ)
+        #add_cathode_node(dimX, dimY, dimZ)
 
 def add_cathode_node(dimX,dimY,dimZ):
     cathode = graph.add_node(Node("Interface", 2, 0, 0, 0))
@@ -212,7 +210,7 @@ def testFilterGraph(filename, visualize, times):
     return (totalTime / times)
 
 #Uses DFS to traverse graph and print's all edges reachele from source node
-def dfs(g, source):
+def dfs_search(g, source):
     nodes = []
     nodes.append(source)
     visDFS = TreeEdgesRecorderDfs()
@@ -220,7 +218,7 @@ def dfs(g, source):
     print('DFS Edges:', visDFS.edges)
 
 #Uses BFS to traverse graph and print's all edges reachele from source node
-def bfs(g, source):
+def bfs_search(g, source):
     nodes = []
     nodes.append(source)
     visBFS = TreeEdgesRecorderBfs()
@@ -261,6 +259,8 @@ def functionMemory(function, *argv):
     return stats
 
 
+# Used for creating CSV files for data of testing
+"""
 def csvMaker(fileName, n, dim, count, graphGen, graphGenPar, graphFilt, graphFiltPar, shortPath, shortPathPar):
     row = [n, (n ** dim)]
     totalTime = 0
@@ -300,7 +300,7 @@ csvMaker("RustworkX_Test_Results.csv", 10, 2, 3, createGraph, [fileName], filter
 
 fileName = "tests/50x50.txt"
 createGraph(fileName)
-filterGraph(graph, False)
+filterGraph(graph, True)
 
 csvMaker("RustworkX_Test_Results.csv", 50, 2, 3, createGraph, [fileName], filterGraph, [graph, False],
          shortest_path, [filteredGraph])
@@ -325,3 +325,4 @@ filterGraph(graph, False)
 
 csvMaker("RustworkX_Test_Results.csv", 1000, 2, 3, createGraph, [fileName], filterGraph, [graph, False],
          shortest_path, [filteredGraph])
+"""
