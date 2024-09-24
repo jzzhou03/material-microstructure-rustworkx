@@ -229,7 +229,11 @@ def bfs_search(g, source):
 def shortest_path(g):
     cathode = g.num_nodes() - 1
     all_paths = dijkstra_shortest_paths(g, cathode)
-    return [all_paths[node] for node in all_paths.keys() if g.get_node_data(node).color == 1]
+    paths = {}
+    for node in all_paths.keys():
+        if g.get_node_data(node).color == 1:
+            paths[node] = list(all_paths[node])
+    return paths
 
 # Used for creating CSV files for data of testing
 """
