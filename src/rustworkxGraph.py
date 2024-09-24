@@ -165,7 +165,7 @@ def testGraphRunTime(g, filename, visualize, cathode, times, output):
         for i in range(times):
             start = time.time()
             createGraph(filename, cathode)
-            visualizeGraphGV(g, output)
+            visualizeGraphGV(g, "images/rustworkx_graph.jpg")
             totalTime += time.time() - start
     else:
         for i in range(times):
@@ -181,7 +181,7 @@ def connectedComponents(edge):
         return False
     return True
 
-def filterGraph(g, visualize, output):
+def filterGraph(g, visualize):
     edges = g.filter_edges(connectedComponents)
     edgeList = []
 
@@ -195,7 +195,7 @@ def filterGraph(g, visualize, output):
     filteredGraph = g.edge_subgraph(edgeList)
 
     if visualize:
-        visualizeGraphGV(filteredGraph, output)
+        visualizeGraphGV(filteredGraph, "images/rustworkx_subgraph.jpg")
 
     return filteredGraph
 
