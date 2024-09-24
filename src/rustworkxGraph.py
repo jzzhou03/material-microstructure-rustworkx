@@ -56,11 +56,8 @@ class TreeEdgesRecorderBfs(BFSVisitor):
     def tree_edge(self, edge):
         self.edges.append(edge)
 
-
-graph = rx.PyGraph()
-filteredGraph = rx.PyGraph()
-
 def createGraph(filename, cathode):
+    graph = rx.PyGraph()
     with open(filename, "r") as f:
         lines = f.readlines()
         header = lines[0].split()
@@ -83,28 +80,30 @@ def createGraph(filename, cathode):
                 line = lines[line_idx].strip().split(" ")
                 line_idx += 1
                 for x in range(dimX):
-                    node = graph.add_node(Node((z * dimX * dimY) + (y * dimX) + x, int(line[x]), x, y, z))
+                    nodeObj = Node((z * dimX * dimY) + (y * dimX) + x, int(line[x]), x, y, z)
+                    node = graph.add_node(nodeObj)
+                    nodeObj.label = node
                     currRow[x] = node
                     currLayer[y][x] = node
 
                     # Left of the node
                     if prevNode != None:
-                        graph.add_edge(node, prevNode, Edge(node, prevNode, 1))
+                        graph.add_edge(node, prevNode, Edge(nodeObj, graph.get_node_data(prevNode), 1))
 
                     # Down of the node
                     if prevRow[x] != None:
-                        graph.add_edge(node, prevRow[x], Edge(node, prevRow[x], 1))
+                        graph.add_edge(node, prevRow[x], Edge(nodeObj, graph.get_node_data(prevRow[x]), 1))
 
                     if (prevLayer[y][x] != None):
-                        graph.add_edge(node, prevLayer[y][x], Edge(node, prevLayer[y][x], 1))
+                        graph.add_edge(node, prevLayer[y][x], Edge(nodeObj, graph.get_node_data(prevLayer[y][x]), 1))
 
                     # Southeast of the node
                     if (x + 1 < dimX) and (prevRow[x + 1] != None):
-                        graph.add_edge(node, prevRow[x + 1], Edge(node, prevRow[x + 1], math.sqrt(2)))
+                        graph.add_edge(node, prevRow[x + 1], Edge(nodeObj, graph.get_node_data(prevRow[x + 1]), math.sqrt(2)))
 
                     # Southwest of the node
                     if (x - 1 >= 0) and (prevRow[x - 1] != None):
-                        graph.add_edge(node, prevRow[x - 1], Edge(node, prevRow[x - 1], math.sqrt(2)))
+                        graph.add_edge(node, prevRow[x - 1], Edge(nodeObj, graph.get_node_data(prevRow[x - 1]), math.sqrt(2)))
 
                     # Checks if the node isn't the last node on the line
                     if (x < dimX - 1):
@@ -116,14 +115,17 @@ def createGraph(filename, cathode):
 
             prevLayer, currLayer = currLayer, [[None] * dimX for i in range(dimY)]
         if (cathode):
-            add_cathode_node(dimX, dimY, dimZ)
+            add_cathode_node(graph, dimX, dimY, dimZ)
+    return graph
 
-def add_cathode_node(dimX,dimY,dimZ):
-    cathode = graph.add_node(Node("Interface", 2, 0, 0, 0))
-    currNodes = graph.node_indices()
+def add_cathode_node(g,dimX,dimY,dimZ):
+    cathodeObj = Node(g.num_nodes(), 2, 0, 0, 0)
+    cathode = g.add_node(cathodeObj)
+    currNodes = g.node_indices()
     for z in range(dimZ):
         for x in range(dimX):
-            graph.add_edge(cathode, currNodes[z * dimX + x], Edge(cathode, currNodes[z * dimX + x], 1))
+            print("add")
+            g.add_edge(cathode, currNodes[z * dimX + x], Edge(cathodeObj, g.get_node_data(currNodes[z * dimX + x]), 1))
 
 
 def visualizeGraphMPL(g):
@@ -142,7 +144,7 @@ def node_attr_fn(node):
     if node.color == 2:
         attr_dict["color"] = "black"
         attr_dict["fillcolor"] = "green"
-    elif node.color == 1:
+    elif node.color == 0:
         attr_dict["color"] = "black"
         attr_dict["fillcolor"] = "black"
         attr_dict["fontcolor"] = "white"
@@ -157,13 +159,13 @@ def visualizeGraphGV(g, file):
     graph_dict = {}
     graphviz_draw(g, filename=file, node_attr_fn=node_attr_fn, graph_attr=graph_dict, method ="neato")
 
-def testGraphRunTime(filename, visualize, cathode, times):
+def testGraphRunTime(g, filename, visualize, cathode, times, output):
     totalTime = 0;
     if visualize:
         for i in range(times):
             start = time.time()
             createGraph(filename, cathode)
-            visualizeGraphGV(graph, "images/rustworkx_graph.jpg")
+            visualizeGraphGV(g, output)
             totalTime += time.time() - start
     else:
         for i in range(times):
@@ -174,37 +176,35 @@ def testGraphRunTime(filename, visualize, cathode, times):
     return (totalTime / times)
 
 def connectedComponents(edge):
-    node1 = graph.get_node_data(edge.node1)
-    node2 = graph.get_node_data(edge.node2)
-
     # Checks if the edge between the two nodes have different colors
-    if ( (node1.color == 0 and node2.color == 1) or (node1.color == 1 and node2.color == 0) ):
+    if ( (edge.node1.color == 0 and edge.node2.color == 1) or (edge.node1.color == 1 and edge.node2.color == 0) ):
         return False
     return True
 
-def filterGraph(g, visualize):
-    global filteredGraph
+def filterGraph(g, visualize, output):
     edges = g.filter_edges(connectedComponents)
     edgeList = []
 
     for edge in edges:
-        node1 = g.get_edge_data_by_index(edge).node1
-        node2 = g.get_edge_data_by_index(edge).node2
+        node1 = int(g.get_edge_data_by_index(edge).node1.label)
+        node2 = int(g.get_edge_data_by_index(edge).node2.label)
         edgeList.append( (node1, node2) )
+
+    print(edgeList)
 
     filteredGraph = g.edge_subgraph(edgeList)
 
     if visualize:
-        visualizeGraphGV(filteredGraph, "images/rustworkx_subgraph.jpg")
+        visualizeGraphGV(filteredGraph, output)
 
-    return edges
+    return filteredGraph
 
-def testFilterGraph(filename, visualize, cathode, times):
+def testFilterGraph(g, filename, visualize, cathode, times):
     totalTime = 0
     for i in range(times):
         start = time.time()
         createGraph(filename, cathode)
-        filterGraph(graph, visualize)
+        filterGraph(g, visualize)
         totalTime += time.time() - start
     print(totalTime / times)
     return (totalTime / times)
@@ -231,7 +231,8 @@ def shortest_path(g):
     all_paths = dijkstra_shortest_paths(g, cathode)
     paths = {}
     for node in all_paths.keys():
-        if g.get_node_data(node).color == 1:
+        print(g.get_node_data(node).color)
+        if g.get_node_data(node).color == 0:
             paths[node] = list(all_paths[node])
     return paths
 
@@ -295,36 +296,36 @@ def csvMaker(fileName, n, dim, count, graphGen, graphGenPar, graphFilt, graphFil
 
 
 fileName = "tests/10x10.txt"
-createGraph(fileName, False)
-filterGraph(graph, False)
+graph = createGraph(fileName, False)
+filteredGraph = filterGraph(graph, False)
 
 csvMaker("RustworkX_Test_Results.csv", 10, 2, 3, createGraph, [fileName], filterGraph, [graph, False],
          shortest_path, [filteredGraph])
 
 fileName = "tests/50x50.txt"
-createGraph(fileName, False)
-filterGraph(graph, True)
+graph = createGraph(fileName, False)
+filteredGraph = filterGraph(graph, True)
 
 csvMaker("RustworkX_Test_Results.csv", 50, 2, 3, createGraph, [fileName], filterGraph, [graph, False],
          shortest_path, [filteredGraph])
 
 fileName = "tests/100x100.txt"
-createGraph(fileName, False)
-filterGraph(graph, False)
+graph = createGraph(fileName, False)
+filteredGraph = filterGraph(graph, False)
 
 csvMaker("RustworkX_Test_Results.csv", 100, 2, 3, createGraph, [fileName], filterGraph, [graph, False],
          shortest_path, [filteredGraph])
 
 fileName = "tests/500x500.txt"
-createGraph(fileName, False)
-filterGraph(graph, False)
+graph = createGraph(fileName, False)
+filteredGraph = filterGraph(graph, False)
 
 csvMaker("RustworkX_Test_Results.csv", 500, 2, 3, createGraph, [fileName], filterGraph, [graph, False],
          shortest_path, [filteredGraph])
 
 fileName = "tests/1000x1000.txt"
-createGraph(fileName, False)
-filterGraph(graph, False)
+graph = createGraph(fileName, False)
+filteredGraph = filterGraph(graph, False)
 
 csvMaker("RustworkX_Test_Results.csv", 1000, 2, 3, createGraph, [fileName], filterGraph, [graph, False],
          shortest_path, [filteredGraph])
